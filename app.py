@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import difflib
+import tempfile
 from pathlib import Path
 
 import matplotlib
@@ -39,11 +40,17 @@ def carregar_mapa_cache(path_str: str) -> MapaMunicipios:
 
 @st.cache_data(show_spinner=False)
 def carregar_mapa_upload_cache(geojson_bytes: bytes) -> MapaMunicipios:
-    # GeoPandas lê melhor a partir de caminho; usamos um arquivo temporário.
-    tmp_path = OUTPUTS_DIR / "_tmp_upload.geojson"
-    OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
-    tmp_path.write_bytes(geojson_bytes)
-    return carregar_mapa(tmp_path)
+    # GeoPandas lê melhor a partir de caminho; usamos um arquivo temporário em /tmp.
+    with tempfile.NamedTemporaryFile(suffix=".geojson", delete=False) as f:
+        f.write(geojson_bytes)
+        tmp_path = Path(f.name)
+    try:
+        return carregar_mapa(tmp_path)
+    finally:
+        try:
+            tmp_path.unlink(missing_ok=True)
+        except Exception:
+            pass
 
 
 def sugerir_municipios(nome_norm: str, universo_norm: list[str], n: int = 3) -> list[str]:
