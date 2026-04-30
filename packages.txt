@@ -1,0 +1,6 @@
+# Dependências do sistema para geoprocessamento (Streamlit Community Cloud / Debian).
+gdal-bin
+libgdal-dev
+libgeos-dev
+libproj-dev
+

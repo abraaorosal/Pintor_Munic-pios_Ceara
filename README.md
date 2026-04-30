@@ -28,6 +28,8 @@ streamlit run app.py
 4. Em **Main file path**, use `app.py`.
 5. Clique em **Deploy** e use o link gerado.
 
+Observação: este repositório inclui `packages.txt` com dependências do sistema (GDAL/PROJ/GEOS) para facilitar a instalação no Cloud.
+
 ## 3) Como usar
 
 1. **GeoJSON do Ceará**:
