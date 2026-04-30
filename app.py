@@ -127,29 +127,31 @@ def main() -> None:
     # Sanitiza seleção atual caso o GeoJSON seja trocado
     st.session_state[KEY_MULTI] = [n for n in st.session_state[KEY_MULTI] if n in nomes_opcoes]
 
-    # Sidebar (parte 2): seleção + estilo
+    # Sidebar (parte 2): seleção + estilo (sem tabs para evitar bugs de DOM em alguns browsers)
     with st.sidebar:
         st.divider()
         st.subheader("Seleção")
         st.caption("Digite para buscar e selecione. O mapa atualiza automaticamente.")
 
-        tab_sel, tab_import = st.tabs(["Lista", "Colar/JSON"])
+        col_s1, col_s2 = st.columns(2)
+        with col_s1:
+            selecionar_todos = st.button("Selecionar todos", use_container_width=True)
+        with col_s2:
+            selecionar_nenhum = st.button("Selecionar nenhum", use_container_width=True)
 
-        with tab_sel:
-            st.multiselect(
-                "Municípios do Ceará",
-                options=nomes_opcoes,
-                key=KEY_MULTI,
-                help="Digite para buscar e selecione múltiplos municípios.",
-            )
+        if selecionar_todos:
+            st.session_state[KEY_MULTI] = nomes_opcoes
+        if selecionar_nenhum:
+            st.session_state[KEY_MULTI] = []
 
-            col_s1, col_s2 = st.columns(2)
-            with col_s1:
-                selecionar_todos = st.button("Selecionar todos", use_container_width=True)
-            with col_s2:
-                selecionar_nenhum = st.button("Selecionar nenhum", use_container_width=True)
+        st.multiselect(
+            "Municípios do Ceará",
+            options=nomes_opcoes,
+            key=KEY_MULTI,
+            help="Digite para buscar e selecione múltiplos municípios.",
+        )
 
-        with tab_import:
+        with st.expander("Importar por texto/JSON", expanded=False):
             municipios_upload = st.file_uploader(
                 "JSON de municípios",
                 type=["json"],
@@ -161,11 +163,8 @@ def main() -> None:
                 height=120,
             )
 
-            col_i1, col_i2 = st.columns(2)
-            with col_i1:
-                substituir = st.checkbox("Substituir seleção", value=False)
-            with col_i2:
-                aplicar_entrada = st.button("Aplicar entrada", use_container_width=True)
+            substituir = st.checkbox("Substituir seleção", value=False)
+            aplicar_entrada = st.button("Aplicar entrada", use_container_width=True)
 
         st.divider()
         st.subheader("Estilo")
@@ -179,18 +178,9 @@ def main() -> None:
         with col_b2:
             preparar_downloads = st.button("Preparar downloads", type="primary", use_container_width=True)
 
-    # Ações do sidebar
-    if selecionar_todos:
-        st.session_state[KEY_MULTI] = nomes_opcoes
-        st.rerun()
-    if selecionar_nenhum:
-        st.session_state[KEY_MULTI] = []
-        st.rerun()
-
     if btn_limpar:
         st.session_state[KEY_MULTI] = []
         st.session_state["nao_encontrados"] = None
-        st.rerun()
 
     if aplicar_entrada:
         municipios: list[str] = []
@@ -226,8 +216,6 @@ def main() -> None:
             st.session_state["nao_encontrados"] = itens
         else:
             st.session_state["nao_encontrados"] = None
-
-        st.rerun()
 
     selecionados_nomes = st.session_state.get(KEY_MULTI, [])
     selecionados_norm = {nome_to_norm[n] for n in selecionados_nomes if n in nome_to_norm}
