@@ -1,0 +1,8 @@
+[theme]
+# Cores institucionais (ajuste se quiser).
+primaryColor = "#0057A8"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F5F7FA"
+textColor = "#1F2933"
+font = "sans serif"
+

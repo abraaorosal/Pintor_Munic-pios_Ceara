@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+
+outputs/*.png
+outputs/*.svg
+outputs/*.pdf
+outputs/_tmp_upload.geojson
+
